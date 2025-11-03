@@ -1,25 +1,60 @@
 # python-besteffort
 
-Best-effort execution of Python modules by rewriting their bytecode at import
-time so that every statement executes inside a ``contextlib.suppress`` block.
+`python-besteffort` installs a custom importer that rewrites Python source on
+the fly so that every statement executes inside a
+``contextlib.suppress(Exception)`` block. When an unexpected exception is
+raised, execution simply skips the failing statement and keeps going—perfect
+for exploratory data analysis, flaky integrations, or anywhere failure should
+not immediately abort a workflow.
 
-## Usage
+## Features
+
+* **Auto-installing importer** – importing :mod:`besteffort` registers the
+  meta-path finder so ``from besteffort import yourmodule`` works without any
+  additional steps. Call :func:`besteffort.install` manually if you need to
+  reinstall it.
+* **Function decorator** – use ``@besteffort`` to protect just the functions
+  you care about without rewriting entire modules.
+* **Preserves module semantics** – relative imports and globals are kept in
+  sync with the original module, ensuring wrapped code still behaves like the
+  unmodified version whenever no exceptions occur.
+
+## Installation
+
+Install the package from PyPI:
+
+```bash
+pip install besteffort
+```
+
+Alternatively, install straight from the repository when testing a development
+build:
+
+```bash
+pip install git+https://github.com/astral-sh/python-besteffort.git
+```
+
+## Quick start
+
+### Import best-effort modules
 
 ```python
-import besteffort  # installs the importer on sys.meta_path
+import besteffort  # registers the meta-path finder on import
 
-# ``yourmodule`` is an example module shipped with the project. Importing it through
-# ``besteffort`` returns a wrapped version where each statement is guarded by
-# ``contextlib.suppress(Exception)``.
+# ``yourmodule`` is an example module shipped with the project. Importing it
+# through ``besteffort`` returns a wrapped version where each statement is
+# guarded by ``contextlib.suppress(Exception)``.
 from besteffort import yourmodule
 
 yourmodule.example("G")
 ```
 
 The wrapped module behaves as if ``with suppress(Exception):`` surrounded each
-statement. Lines that raise simply fail closed and execution continues.
+statement. Lines that raise simply fail closed and execution continues. Even a
+bare ``from besteffort import yourmodule`` works because Python imports the
+package before looking up ``yourmodule``.
 
-### Decorating a single function
+### Decorate individual functions
 
 ```python
 from besteffort import besteffort
@@ -40,6 +75,16 @@ Only the decorated function is rewritten, allowing the rest of the module to
 run normally. Use ``@besteffort`` as the innermost decorator when stacking it
 with others.
 
+## Testing
+
+Run the unit test suite locally before contributing:
+
+```bash
+pytest
+# or, to use our automation profile
+nox -s tests
+```
+
 ## Limitations
 
 * Only rewrites Python source (``.py``). Built-ins and C extensions cannot be
@@ -49,3 +94,9 @@ with others.
 * Relative imports from the instrumented module work by setting
   ``__package__`` to the original package; absolute imports inside the module
   load the normal (unmodified) dependencies.
+
+## Contributing
+
+We welcome issues from everyone, but only pull requests opened by Codex are
+accepted. If you spot unexpected behavior, please file an issue describing the
+problem so we can investigate.
