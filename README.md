@@ -31,7 +31,7 @@ Alternatively, install straight from the repository when testing a development
 build:
 
 ```bash
-pip install git+https://github.com/astral-sh/python-besteffort.git
+pip install git+https://github.com/grantjenks/python-besteffort.git
 ```
 
 ## Python compatibility
