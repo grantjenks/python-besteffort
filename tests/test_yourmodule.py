@@ -1,17 +1,17 @@
 import asyncio
 
-from besteffort import foo  # noqa: F401 ensures finder is installed
+from besteffort import yourmodule  # noqa: F401 ensures finder is installed
 
 
 def test_example_raises_and_prints(capsys):
-    foo.example("Alice")
+    yourmodule.example("Alice")
     captured = capsys.readouterr()
     assert "hi Alice" in captured.out
     assert "bye" in captured.out
 
 
 def test_loops_stops_on_error(capsys):
-    foo.loops()
+    yourmodule.loops()
     captured = capsys.readouterr()
     assert "loop 0 start" in captured.out
     assert "loop 0 end" in captured.out
@@ -23,7 +23,7 @@ def test_loops_stops_on_error(capsys):
 
 
 def test_tricky_raises_after_print(capsys):
-    foo.tricky()
+    yourmodule.tricky()
     captured = capsys.readouterr()
     assert "before return" in captured.out
     assert "after return" in captured.out
@@ -31,7 +31,7 @@ def test_tricky_raises_after_print(capsys):
 
 def test_async_exception(capsys):
     async def run_async():
-        await foo.aex()
+        await yourmodule.aex()
 
     asyncio.run(run_async())
     captured = capsys.readouterr()
@@ -40,7 +40,7 @@ def test_async_exception(capsys):
 
 
 def test_class_method_raises(capsys):
-    instance = foo.C()
+    instance = yourmodule.C()
     instance.m()
     captured = capsys.readouterr()
     assert "C.m before" in captured.out

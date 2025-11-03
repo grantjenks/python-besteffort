@@ -8,12 +8,12 @@ time so that every statement executes inside a ``contextlib.suppress`` block.
 ```python
 import besteffort  # installs the importer on sys.meta_path
 
-# ``foo`` is an example module shipped with the project. Importing it through
+# ``yourmodule`` is an example module shipped with the project. Importing it through
 # ``besteffort`` returns a wrapped version where each statement is guarded by
 # ``contextlib.suppress(Exception)``.
-from besteffort import foo
+from besteffort import yourmodule
 
-foo.example("G")
+yourmodule.example("G")
 ```
 
 The wrapped module behaves as if ``with suppress(Exception):`` surrounded each
