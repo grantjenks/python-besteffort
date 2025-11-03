@@ -26,4 +26,4 @@ jobs:
         uses: astral-sh/setup-uv@v3
 
       - name: Run tests
-        run: uv run nox -s tests
+        run: uvx nox -s tests
