@@ -104,6 +104,5 @@ nox -s tests
 
 ## Contributing
 
-We welcome issues from everyone, but only pull requests opened by Codex are
-accepted. If you spot unexpected behavior, please file an issue describing the
-problem so we can investigate.
+If you have an issue, give it to Codex. If it's too complex for Codex then :shrug:
+Only pull requests opened by Codex will be accepted.
