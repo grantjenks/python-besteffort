@@ -200,11 +200,8 @@ class _BestEffortFinder(importlib.abc.MetaPathFinder):
         return spec
 
 
-def _install_finder_once() -> None:
+def install() -> None:
     for f in sys.meta_path:
         if isinstance(f, _BestEffortFinder):
             return
     sys.meta_path.insert(0, _BestEffortFinder())
-
-
-_install_finder_once()

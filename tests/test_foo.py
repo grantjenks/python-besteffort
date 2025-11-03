@@ -2,7 +2,7 @@ import asyncio
 
 import importlib
 
-import besteffort.core  # noqa: F401 ensures finder is installed
+import besteffort  # noqa: F401 ensures finder is installed
 
 foo = importlib.import_module("besteffort.tests.foo")
 
