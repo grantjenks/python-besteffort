@@ -1,10 +1,6 @@
 import asyncio
 
-import importlib
-
-import besteffort  # noqa: F401 ensures finder is installed
-
-foo = importlib.import_module("besteffort.tests.foo")
+from besteffort import foo  # noqa: F401 ensures finder is installed
 
 
 def test_example_raises_and_prints(capsys):
