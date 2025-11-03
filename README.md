@@ -36,10 +36,10 @@ pip install git+https://github.com/grantjenks/python-besteffort.git
 
 ## Python compatibility
 
-`python-besteffort` is continuously tested on CPython 3.8 through 3.12. The
-test-suite automatically exercises syntax introduced in later releases (such as
-structural pattern matching and exception groups) when the interpreter
-supports it, while skipping those checks on earlier versions.
+`python-besteffort` supports CPython 3.10 and newer. The test suite runs on
+Python 3.10 through 3.13 and automatically exercises syntax introduced in later
+releases (such as structural pattern matching and exception groups) when the
+interpreter supports it, while skipping those checks on earlier versions.
 
 ## Quick start
 
