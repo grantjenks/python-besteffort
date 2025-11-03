@@ -4,10 +4,11 @@ from __future__ import annotations
 
 import asyncio
 from contextlib import nullcontext
+from typing import List
 
 
-def try_finally_example() -> list[str]:
-    log: list[str] = []
+def try_finally_example() -> List[str]:
+    log: List[str] = []
     try:
         log.append("try start")
         raise RuntimeError("boom")
@@ -18,8 +19,8 @@ def try_finally_example() -> list[str]:
     return log
 
 
-def while_else_example() -> list[str]:
-    log: list[str] = []
+def while_else_example() -> List[str]:
+    log: List[str] = []
     count = 0
     while count < 3:
         log.append(f"while {count} start")
@@ -33,8 +34,8 @@ def while_else_example() -> list[str]:
     return log
 
 
-def with_example() -> list[str]:
-    log: list[str] = []
+def with_example() -> List[str]:
+    log: List[str] = []
     with nullcontext():
         log.append("with start")
         raise RuntimeError("with boom")
@@ -43,8 +44,8 @@ def with_example() -> list[str]:
     return log
 
 
-async def async_with_example() -> list[str]:
-    log: list[str] = []
+async def async_with_example() -> List[str]:
+    log: List[str] = []
     lock = asyncio.Lock()
     async with lock:
         log.append("async with start")
@@ -54,8 +55,8 @@ async def async_with_example() -> list[str]:
     return log
 
 
-async def async_for_example() -> list[str]:
-    log: list[str] = []
+async def async_for_example() -> List[str]:
+    log: List[str] = []
 
     async def _agen():
         for i in range(3):
@@ -70,28 +71,3 @@ async def async_for_example() -> list[str]:
     return log
 
 
-def match_example(kind: str) -> list[str]:
-    log: list[str] = []
-    match {"kind": kind}:
-        case {"kind": "alpha"}:
-            log.append("match alpha start")
-            raise RuntimeError("match boom")
-            log.append("match alpha end")
-        case _:
-            log.append("match default")
-    log.append("after match")
-    return log
-
-
-def trystar_example() -> list[str]:
-    log: list[str] = []
-    try:
-        log.append("trystar start")
-        raise ValueError("boom")
-        log.append("trystar end")
-    except* ValueError as exc:
-        log.append(f"trystar handler {len(exc.exceptions)}")
-    finally:
-        log.append("trystar finally")
-    log.append("trystar after")
-    return log

@@ -1,4 +1,5 @@
 import asyncio
+from typing import List
 
 import pytest
 
@@ -7,14 +8,14 @@ from besteffort import besteffort
 
 def test_decorator_suppresses_exceptions(capsys):
     @besteffort
-    def sample(name: str, calls: list[str]) -> None:
+    def sample(name: str, calls: List[str]) -> None:
         print(f"start {name}")
         calls.append("before")
         raise ValueError("boom")
         print(f"end {name}")
         calls.append("after")
 
-    calls: list[str] = []
+    calls: List[str] = []
     sample("x", calls)
     captured = capsys.readouterr()
     assert "start x" in captured.out
@@ -24,14 +25,14 @@ def test_decorator_suppresses_exceptions(capsys):
 
 def test_decorator_handles_async_functions(capsys):
     @besteffort
-    async def sample_async(seen: list[int]) -> None:
+    async def sample_async(seen: List[int]) -> None:
         print("async start")
         seen.append(1)
         raise RuntimeError("bad async")
         print("async end")
         seen.append(2)
 
-    seen: list[int] = []
+    seen: List[int] = []
     asyncio.run(sample_async(seen))
     captured = capsys.readouterr()
     assert "async start" in captured.out

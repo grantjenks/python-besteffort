@@ -1,4 +1,7 @@
 import asyncio
+import sys
+
+import pytest
 
 from besteffort import statements_module
 
@@ -36,8 +39,11 @@ def test_with_body_continues():
     ]
 
 
+@pytest.mark.skipif(sys.version_info < (3, 10), reason="requires Python 3.10+ for match")
 def test_match_case_is_instrumented():
-    result = statements_module.match_example("alpha")
+    from besteffort import statements_match
+
+    result = statements_match.match_example("alpha")
     assert result == [
         "match alpha start",
         "match alpha end",
@@ -45,8 +51,11 @@ def test_match_case_is_instrumented():
     ]
 
 
+@pytest.mark.skipif(sys.version_info < (3, 11), reason="requires Python 3.11+ for exception groups")
 def test_trystar_body_is_wrapped():
-    result = statements_module.trystar_example()
+    from besteffort import statements_trystar
+
+    result = statements_trystar.trystar_example()
     assert result == [
         "trystar start",
         "trystar end",

@@ -34,6 +34,13 @@ build:
 pip install git+https://github.com/astral-sh/python-besteffort.git
 ```
 
+## Python compatibility
+
+`python-besteffort` is continuously tested on CPython 3.8 through 3.12. The
+test-suite automatically exercises syntax introduced in later releases (such as
+structural pattern matching and exception groups) when the interpreter
+supports it, while skipping those checks on earlier versions.
+
 ## Quick start
 
 ### Import best-effort modules
