@@ -96,14 +96,16 @@ class _BestEffortTransformer(ast.NodeTransformer):
             h.body = self._guard_block(h.body)
         return node
 
-    def visit_TryStar(self, node: ast.TryStar) -> ast.TryStar:  # Python 3.11+
-        self.generic_visit(node)
-        node.body = self._guard_block(node.body)
-        node.orelse = self._guard_block(node.orelse)
-        node.finalbody = self._guard_block(node.finalbody)
-        for h in node.handlers:
-            h.body = self._guard_block(h.body)
-        return node
+    if hasattr(ast, "TryStar"):
+
+        def visit_TryStar(self, node: ast.TryStar) -> ast.TryStar:  # Python 3.11+
+            self.generic_visit(node)
+            node.body = self._guard_block(node.body)
+            node.orelse = self._guard_block(node.orelse)
+            node.finalbody = self._guard_block(node.finalbody)
+            for h in node.handlers:
+                h.body = self._guard_block(h.body)
+            return node
 
     def visit_Match(self, node: ast.Match) -> ast.Match:  # Python 3.10+
         self.generic_visit(node)
