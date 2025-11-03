@@ -1,16 +1,23 @@
 from __future__ import annotations
 
 import ast
+import functools
 import importlib.abc
 import importlib.machinery
 import importlib.util
+import inspect
 import io
 import os
 import sys
+import textwrap
 from types import ModuleType
+from typing import Any, Callable, Optional, TypeVar, Union
 
 _PREFIX = "besteffort."
 _SUPPRESS_ALIAS = "__besteffort_suppress__"
+
+_FuncNode = Union[ast.FunctionDef, ast.AsyncFunctionDef]
+_CallableT = TypeVar("_CallableT", bound=Callable[..., Any])
 
 
 class _BestEffortTransformer(ast.NodeTransformer):
@@ -205,3 +212,71 @@ def install() -> None:
         if isinstance(f, _BestEffortFinder):
             return
     sys.meta_path.insert(0, _BestEffortFinder())
+
+
+def _strip_besteffort_decorators(func_node: _FuncNode) -> None:
+    func_node.decorator_list = [
+        d
+        for d in func_node.decorator_list
+        if not (
+            isinstance(d, ast.Name) and d.id == "besteffort"
+            or (
+                isinstance(d, ast.Attribute)
+                and isinstance(d.value, ast.Name)
+                and d.value.id == "besteffort"
+                and d.attr == "besteffort"
+            )
+        )
+    ]
+
+
+def _find_target_function(tree: ast.Module, name: str) -> Optional[_FuncNode]:
+    for node in tree.body:
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == name:
+            return node
+    return None
+
+
+def besteffort(func: _CallableT) -> _CallableT:
+    """Return a best-effort version of *func*.
+
+    The returned function executes each statement inside ``contextlib.suppress``
+    so that individual failures do not abort the overall call. The decorator is
+    intended to be used as the innermost decorator on the target function.
+    """
+
+    if not callable(func):
+        raise TypeError("@besteffort can only be applied to callables")
+
+    try:
+        source_lines, _ = inspect.getsourcelines(func)
+    except (OSError, TypeError) as exc:  # pragma: no cover - defensive guard
+        raise TypeError("besteffort decorator requires Python source to be available") from exc
+
+    source = textwrap.dedent("".join(source_lines))
+    filename = inspect.getsourcefile(func) or inspect.getfile(func)
+
+    tree = ast.parse(source, filename=filename)
+    func_node = _find_target_function(tree, func.__name__)
+    if func_node is None:
+        raise ValueError(f"Could not locate function definition for {func.__name__!r}")
+
+    _strip_besteffort_decorators(func_node)
+    tree = _BestEffortTransformer().visit(tree)
+    ast.fix_missing_locations(tree)
+
+    globals_dict = func.__globals__
+    original_binding = globals_dict.get(func.__name__)
+
+    code = compile(tree, filename=filename, mode="exec")
+    exec(code, globals_dict)
+
+    new_func = globals_dict.get(func.__name__)
+    if not callable(new_func):  # pragma: no cover - defensive guard
+        raise RuntimeError("besteffort: failed to recompile function")
+
+    if original_binding is not None:
+        globals_dict[func.__name__] = original_binding
+
+    functools.update_wrapper(new_func, func)  # type: ignore[arg-type]
+    return new_func  # type: ignore[return-value]

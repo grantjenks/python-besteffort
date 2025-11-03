@@ -16,6 +16,27 @@ foo.example("G")
 The wrapped module behaves as if ``with suppress(Exception):`` surrounded each
 statement. Lines that raise simply fail closed and execution continues.
 
+### Decorating a single function
+
+```python
+from besteffort import besteffort
+
+
+@besteffort
+def fragile(value: int) -> int:
+    print("before divide")
+    value /= 0
+    print("after divide")
+    return value
+
+
+fragile(10)
+```
+
+Only the decorated function is rewritten, allowing the rest of the module to
+run normally. Use ``@besteffort`` as the innermost decorator when stacking it
+with others.
+
 ## Limitations
 
 * Only rewrites Python source (``.py``). Built-ins and C extensions cannot be
