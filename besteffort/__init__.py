@@ -10,15 +10,12 @@ from __future__ import annotations
 
 from . import core as _core
 
-
-def install() -> None:
-    """Install the best-effort importer on :data:`sys.meta_path`."""
-
-    _core.install()
+install = _core.install
+besteffort = _core.besteffort
 
 
 install()
 
-del _core
+__all__ = ["install", "besteffort"]
 
-__all__ = ["install"]
+del _core
